@@ -1,0 +1,22 @@
+/* Linha Palha: creme/champagne, verde-floresta, bordô e dourado suave. */
+.theme-palha {
+  --bg: #f5ead5;
+  --frame: #c5a56b;
+  --ink: #214e37;
+  --muted: #7b5b45;
+  --accent: #8d2f3c;
+  --price: #8d2f3c;
+  --rule: rgba(141, 47, 60, 0.35);
+  --btn-bg: #214e37;
+  --btn-ink: #f5ead5;
+  --seal-bg: #8d2f3c;
+  --seal-ink: #f8eedc;
+  --photo-edge: rgba(197, 165, 107, 0.7);
+  --photo-shadow: rgba(80, 55, 30, 0.28);
+  --orn: #3f6e52;
+  --orn-opacity: 0.38;
+  background:
+    radial-gradient(circle at 10% 14%, rgba(197, 165, 107, 0.08) 0, rgba(197, 165, 107, 0) 12%),
+    radial-gradient(circle at 92% 82%, rgba(197, 165, 107, 0.08) 0, rgba(197, 165, 107, 0) 12%),
+    radial-gradient(ellipse at 50% 40%, #faf2e1 0, #f5ead5 72%);
+}
