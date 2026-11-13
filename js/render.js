@@ -163,19 +163,62 @@
     });
     var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
     return Promise.all([fonts].concat(decodes)).then(function () {
+      fitTitles();
       document.documentElement.setAttribute("data-overflow", overflowingPages().join(","));
       document.documentElement.classList.add("ready");
     });
   }
 
-  /* ids das páginas cujo conteúdo passa do tamanho A4 (usado por scripts/verify-pdf.py). */
+  /* Título longo: reduz a fonte (até 16pt) até caber em uma linha; se ainda assim
+     passar, ficam duas linhas pequenas. Evita empurrar o botão para fora da página. */
+  function fitTitles() {
+    Array.prototype.forEach.call(document.querySelectorAll(".head__title"), function (title) {
+      var size = parseFloat(getComputedStyle(title).fontSize) * 0.75; // px -> pt
+      var oneLine = function () { return title.scrollHeight <= parseFloat(getComputedStyle(title).lineHeight) + 1; };
+      while (!oneLine() && size > 16) {
+        size -= 1;
+        title.style.fontSize = size + "pt";
+      }
+    });
+  }
+
+  /* ids das páginas de produto cujo conteúdo estoura o A4 ou cujo botão passa da moldura
+     (usado por scripts/verify-pdf.py e pelos testes). */
   function overflowingPages() {
     return Array.prototype.filter
       .call(document.querySelectorAll(".page"), function (page) {
         var inner = page.querySelector(".page__inner");
-        return page.scrollHeight > page.clientHeight || (inner && inner.scrollHeight > inner.clientHeight);
+        var cta = page.querySelector(".cta");
+        var frame = page.querySelector(".page__frame");
+        var pushedOut = cta && frame && cta.getBoundingClientRect().bottom > frame.getBoundingClientRect().bottom - 2;
+        return page.scrollHeight > page.clientHeight || (inner && inner.scrollHeight > inner.clientHeight) || pushedOut;
       })
       .map(function (page) { return page.id; });
+  }
+
+  /* Só entram no catálogo produtos cujas 3 fotos realmente carregam (arquivo ausente = omitido). */
+  function loadableProducts(data) {
+    var loads = function (src) {
+      return new Promise(function (resolve) {
+        var img = new Image();
+        img.onload = function () { resolve(true); };
+        img.onerror = function () { resolve(false); };
+        img.src = src;
+      });
+    };
+    return Promise.all(
+      data.products.map(function (p) {
+        if (!globalThis.CatalogCore.isRenderable(p)) return false;
+        return Promise.all([p.photos.full, p.photos.detail1, p.photos.detail2].map(function (f) { return loads(f.src); }))
+          .then(function (r) { return r.every(Boolean); });
+      })
+    ).then(function (ok) {
+      var kept = data.products.filter(function (p, i) {
+        if (!ok[i]) console.warn("Produto ignorado (faltam fotos):", p.id);
+        return ok[i];
+      });
+      return Object.assign({}, data, { products: kept });
+    });
   }
 
   /* Barra só de tela: atalhos (capa e primeira página de cada linha) e "Salvar PDF". */
@@ -211,15 +254,18 @@
   }
 
   globalThis.renderCatalog = renderCatalog;
+  globalThis.overflowingPages = overflowingPages;
 
   function start() {
     var root = document.getElementById("catalog");
     if (!root || !globalThis.CATALOG) return;
-    renderCatalog(root, globalThis.CATALOG);
-    renderToolbar(root, globalThis.CATALOG);
-    updateScale();
-    window.addEventListener("resize", updateScale);
-    markReadyWhenLoaded();
+    loadableProducts(globalThis.CATALOG).then(function (data) {
+      renderCatalog(root, data);
+      renderToolbar(root, data);
+      updateScale();
+      window.addEventListener("resize", updateScale);
+      return markReadyWhenLoaded();
+    });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
   else start();

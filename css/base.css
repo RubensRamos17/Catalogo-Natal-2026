@@ -140,7 +140,9 @@ h2, p { margin: 0; }
 
 .cta {
   margin-top: auto;
-  height: 13mm;
+  min-height: 13mm;
+  padding: 2mm 5mm;
+  text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
