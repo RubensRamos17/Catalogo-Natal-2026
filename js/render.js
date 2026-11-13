@@ -178,12 +178,47 @@
       .map(function (page) { return page.id; });
   }
 
+  /* Barra só de tela: atalhos (capa e primeira página de cada linha) e "Salvar PDF". */
+  function renderToolbar(root, data) {
+    var bar = el("nav", "toolbar no-print");
+    bar.setAttribute("aria-label", "Atalhos do catálogo");
+    var add = function (label, id) {
+      var a = text("a", "", label);
+      a.href = "#" + id;
+      bar.appendChild(a);
+    };
+    add("Capa", "capa");
+    data.lines.forEach(function (line) {
+      var first = root.querySelector(".theme-" + line.theme);
+      if (first) {
+        var label = line.label.toLowerCase().replace(/(^|\s)\S/g, function (c) { return c.toUpperCase(); });
+        add(label, first.id);
+      }
+    });
+    var save = text("button", "", "Salvar PDF");
+    save.type = "button";
+    save.addEventListener("click", function () { window.print(); });
+    bar.appendChild(save);
+    document.body.insertBefore(bar, root);
+  }
+
+  /* Reduz as páginas (210 mm) para caber em telas estreitas; nunca amplia. */
+  function updateScale() {
+    var pageWidthPx = (210 / 25.4) * 96;
+    var available = document.documentElement.clientWidth - 16;
+    var scale = Math.min(1, available / pageWidthPx);
+    document.documentElement.style.setProperty("--scale", scale.toFixed(4));
+  }
+
   globalThis.renderCatalog = renderCatalog;
 
   function start() {
     var root = document.getElementById("catalog");
     if (!root || !globalThis.CATALOG) return;
     renderCatalog(root, globalThis.CATALOG);
+    renderToolbar(root, globalThis.CATALOG);
+    updateScale();
+    window.addEventListener("resize", updateScale);
     markReadyWhenLoaded();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
