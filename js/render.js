@@ -163,8 +163,19 @@
     });
     var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
     return Promise.all([fonts].concat(decodes)).then(function () {
+      document.documentElement.setAttribute("data-overflow", overflowingPages().join(","));
       document.documentElement.classList.add("ready");
     });
+  }
+
+  /* ids das páginas cujo conteúdo passa do tamanho A4 (usado por scripts/verify-pdf.py). */
+  function overflowingPages() {
+    return Array.prototype.filter
+      .call(document.querySelectorAll(".page"), function (page) {
+        var inner = page.querySelector(".page__inner");
+        return page.scrollHeight > page.clientHeight || (inner && inner.scrollHeight > inner.clientHeight);
+      })
+      .map(function (page) { return page.id; });
   }
 
   globalThis.renderCatalog = renderCatalog;

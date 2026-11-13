@@ -1,1 +1,39 @@
-/* Regras de impressão (A4, cores exatas) — completadas na Tarefa 4. */
+/* Impressão / "Salvar como PDF": cada .page vira exatamente uma folha A4. */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    width: 210mm;
+    height: 297mm;
+    overflow: hidden;
+    margin: 0;
+    box-shadow: none;
+    transform: none;
+    zoom: 1;
+    break-after: page;
+    page-break-after: always;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}

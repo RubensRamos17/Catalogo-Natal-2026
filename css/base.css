@@ -59,6 +59,9 @@ h2, p { margin: 0; }
   z-index: 2;
 }
 
+/* Nada encolhe em silêncio: se o conteúdo não couber, estoura e o verificador acusa. */
+.page--product .page__inner > * { flex-shrink: 0; }
+
 .head { text-align: center; }
 .head__eyebrow { font-size: 8pt; letter-spacing: 0.34em; color: var(--muted); }
 .head__rule { width: 100mm; height: 0.3mm; background: var(--frame); opacity: 0.7; margin: 3mm auto 4mm; }
