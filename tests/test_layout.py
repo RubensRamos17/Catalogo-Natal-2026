@@ -63,7 +63,7 @@ class Layout(unittest.TestCase):
 
     def test_product_with_a_missing_photo_file_is_omitted(self):
         page = self.open(block="**/2-encanto-detail2.jpg")
-        self.assertEqual(page.locator(".page").count(), 11)  # capa + 10 produtos
+        self.assertEqual(page.locator(".page").count(), 12)  # capa + 11 produtos
         self.assertEqual(page.locator('[id="2-encanto"]').count(), 0)
         labels = page.eval_on_selector_all(".toolbar a", "els => els.map(e => e.textContent.trim())")
         self.assertEqual(labels, ["Capa", "Enfeites", "Linha Vime", "Linha Palha"])
@@ -76,10 +76,10 @@ class Layout(unittest.TestCase):
     def test_enfeites_come_first_after_the_cover_in_the_agreed_order(self):
         page = self.open()
         titles = page.eval_on_selector_all(".page--product .head__title", "els => els.map(e => e.textContent)")
-        self.assertEqual(titles[:7], [
-            "Enfeite Poesia", "Enfeite Encanto Silvestre", "Enfeite Aconchego", "Enfeite Doce Magia",
+        self.assertEqual(titles[:8], [
+            "Enfeite Poesia", "Enfeite Encanto Silvestre", "Enfeite Sereno Encanto", "Enfeite Aconchego", "Enfeite Doce Magia",
             "Enfeite Memórias", "Escapulário Bosque Encantado", "Escapulário Jardim de Natal"])
-        self.assertEqual(titles[7:], ["Guirlanda Laços de Amor", "Guirlanda Resplendor", "Guirlanda Encanto", "Guirlanda Luz"])
+        self.assertEqual(titles[8:], ["Guirlanda Laços de Amor", "Guirlanda Resplendor", "Guirlanda Encanto", "Guirlanda Luz"])
 
     def test_enfeite_page_shows_burgundy_theme_price_and_button_but_no_size(self):
         page = self.open()

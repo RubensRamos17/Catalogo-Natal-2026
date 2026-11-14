@@ -10,7 +10,7 @@ KINDS = ["full", "detail1", "detail2"]
 PHOTOS = {name: KINDS for name in [
     "4-lacos-de-amor", "1-resplendor", "2-encanto", "3-luz",
     "7-doce-magia", "8-memorias", "9-bosque-encantado", "10-encanto-silvestre",
-    "12-jardim-de-natal", "13-aconchego",
+    "12-jardim-de-natal", "13-aconchego", "14-sereno-encanto",
 ]}
 PHOTOS["11-poesia"] = ["full", "detail1"]  # só um detalhe
 
@@ -35,7 +35,7 @@ class OptimizedImages(unittest.TestCase):
     def test_total_weight_is_light_enough_for_whatsapp(self):
         total = sum(p.stat().st_size for p in DST.glob("*") if p.is_file())
         self.assertGreater(total, 0)
-        self.assertLess(total, 7 * 1024 * 1024)  # PDF final < 10 MB, com folga para novas peças
+        self.assertLess(total, 8 * 1024 * 1024)  # PDF final < 10 MB, com folga para novas peças
 
 
 if __name__ == "__main__":

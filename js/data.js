@@ -40,6 +40,15 @@
         photos: photos("10-encanto-silvestre", [[1200, 960], [750, 1000], [750, 1000]]),
       },
       {
+        id: "14-sereno-encanto",
+        title: "Enfeite Sereno Encanto",
+        line: "enfeites",
+        article: "o",
+        price: 53,
+        ctaLabel: "Pedir Sereno Encanto",
+        photos: photos("14-sereno-encanto", [[1200, 960], [750, 1000], [750, 1000]]),
+      },
+      {
         id: "13-aconchego",
         title: "Enfeite Aconchego",
         line: "enfeites",

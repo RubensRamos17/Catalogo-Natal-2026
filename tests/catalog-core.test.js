@@ -81,6 +81,7 @@ test("catalog data keeps the agreed order, values and no banned words", () => {
     [
       ["Enfeite Poesia", "enfeites", undefined, 30],
       ["Enfeite Encanto Silvestre", "enfeites", undefined, 30],
+      ["Enfeite Sereno Encanto", "enfeites", undefined, 53],
       ["Enfeite Aconchego", "enfeites", undefined, 55],
       ["Enfeite Doce Magia", "enfeites", undefined, 58],
       ["Enfeite Memórias", "enfeites", undefined, 70],
@@ -104,6 +105,7 @@ test("enfeites use the user's button texts and the masculine article; poesia has
   const labels = {
     "Enfeite Poesia": "Pedir Enfeite Poesia",
     "Enfeite Encanto Silvestre": "Pedir Enfeite Encanto Silvestre",
+    "Enfeite Sereno Encanto": "Pedir Sereno Encanto",
     "Enfeite Aconchego": "Pedir Enfeite Aconchego",
     "Enfeite Doce Magia": "Pedir Doce Magia",
     "Enfeite Memórias": "Pedir Enfeite Memórias",
