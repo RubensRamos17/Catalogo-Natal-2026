@@ -61,11 +61,12 @@
     var core = globalThis.CatalogCore;
     var ph = product.photos;
     var ratio = function (p) { return p.w / p.h; };
+    var details = [ph.detail1, ph.detail2].filter(Boolean); // 1 ou 2 detalhes
     var block = core.photoBlock({
       heightMm: PHOTOS_HEIGHT_MM,
       gapMm: PHOTOS_GAP_MM,
       fullRatio: ratio(ph.full),
-      detailRatios: [ratio(ph.detail1), ratio(ph.detail2)],
+      detailRatios: details.map(ratio),
     });
 
     var page = el("section", "page page--product theme-" + line.theme);
@@ -90,36 +91,40 @@
     stage.style.setProperty("--photos-h", PHOTOS_HEIGHT_MM + "mm");
     stage.appendChild(el("div", "stage__orn stage__orn--left", ICONS.sprig));
     var photos = el("div", "photos");
+    var share = details.reduce(function (a, d) { return a + ratio(d); }, 0);
     var photo = function (p, cls, alt) {
       var img = el("img", "photo " + cls);
       img.src = p.src;
       img.width = p.w;
       img.height = p.h;
       img.alt = alt;
-      img.style.flex = ratio(p).toFixed(4) + " 1 0";
+      img.style.flex = (ratio(p) / share).toFixed(4) + " 1 0"; // soma 1: a linha sempre se preenche
       return img;
     };
     var full = photo(ph.full, "photo--full", product.title);
     full.style.flex = "none";
     photos.appendChild(full);
     var row = el("div", "photos__row");
-    row.appendChild(photo(ph.detail1, "photo--detail", "Detalhe 1 — " + product.title));
-    row.appendChild(photo(ph.detail2, "photo--detail", "Detalhe 2 — " + product.title));
+    details.forEach(function (d, i) {
+      row.appendChild(photo(d, "photo--detail", "Detalhe " + (i + 1) + " — " + product.title));
+    });
     photos.appendChild(row);
     stage.appendChild(photos);
     stage.appendChild(el("div", "stage__orn stage__orn--right", ICONS.sprig));
     inner.appendChild(stage);
 
-    var info = el("div", "info");
-    var size = el("div", "info__size");
-    size.appendChild(text("span", "info__label", "TAMANHO"));
-    var sizeValue = text("strong", "info__value", product.size);
-    sizeValue.appendChild(text("small", "", " de diâmetro"));
-    size.appendChild(sizeValue);
+    var info = el("div", "info" + (product.size ? "" : " info--solo"));
     var price = el("div", "info__price");
     price.appendChild(text("span", "info__label", "VALOR"));
     price.appendChild(text("strong", "info__value info__value--price", core.formatPrice(product.price)));
-    info.appendChild(size);
+    if (product.size) { // peças sem tamanho informado mostram só o valor, centralizado
+      var size = el("div", "info__size");
+      size.appendChild(text("span", "info__label", "TAMANHO"));
+      var sizeValue = text("strong", "info__value", product.size);
+      sizeValue.appendChild(text("small", "", " de diâmetro"));
+      size.appendChild(sizeValue);
+      info.appendChild(size);
+    }
     info.appendChild(price);
     inner.appendChild(info);
 
@@ -131,8 +136,8 @@
     });
     inner.appendChild(pay);
 
-    var cta = text("a", "cta", "Pedir a " + product.title);
-    cta.href = core.buildWhatsAppUrl(data.whatsapp, product.title);
+    var cta = text("a", "cta", core.ctaLabel(product));
+    cta.href = core.buildWhatsAppUrl(data.whatsapp, product.title, product.article);
     cta.target = "_blank";
     cta.rel = "noopener";
     inner.appendChild(cta);
@@ -209,7 +214,7 @@
     return Promise.all(
       data.products.map(function (p) {
         if (!globalThis.CatalogCore.isRenderable(p)) return false;
-        return Promise.all([p.photos.full, p.photos.detail1, p.photos.detail2].map(function (f) { return loads(f.src); }))
+        return Promise.all([p.photos.full, p.photos.detail1, p.photos.detail2].filter(Boolean).map(function (f) { return loads(f.src); }))
           .then(function (r) { return r.every(Boolean); });
       })
     ).then(function (ok) {
@@ -234,7 +239,7 @@
     data.lines.forEach(function (line) {
       var first = root.querySelector(".theme-" + line.theme);
       if (first) {
-        var label = line.label.toLowerCase().replace(/(^|\s)\S/g, function (c) { return c.toUpperCase(); });
+        var label = line.nav || line.label.toLowerCase().replace(/(^|\s)\S/g, function (c) { return c.toUpperCase(); });
         add(label, first.id);
       }
     });

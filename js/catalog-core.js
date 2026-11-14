@@ -3,22 +3,24 @@
 (function () {
   "use strict";
 
-  function buildWhatsAppUrl(number, title) {
-    var message = "Quero comprar a " + title + "!";
+  /* article: "a" (padrão, guirlandas) ou "o" (enfeites e escapulários). */
+  function buildWhatsAppUrl(number, title, article) {
+    var message = "Quero comprar " + (article || "a") + " " + title + "!";
     return "https://wa.me/" + number + "?text=" + encodeURIComponent(message);
   }
 
   /* Bloco de fotos: foto principal em cima (proporção real), abaixo uma linha com
-     os dois detalhes na mesma altura, cada um com largura proporcional à sua
+     um ou dois detalhes na mesma altura, cada um com largura proporcional à sua
      proporção. A altura total é fixa; a largura W é o que sobra para resolver:
-       H = W/fullRatio + gap + (W - gap)/(r1 + r2)                                */
+       H = W/fullRatio + gap + (W - (n-1)*gap)/(soma das proporções dos detalhes) */
   function photoBlock(o) {
-    var rsum = o.detailRatios[0] + o.detailRatios[1];
-    var widthMm = (o.heightMm - o.gapMm + o.gapMm / rsum) / (1 / o.fullRatio + 1 / rsum);
+    var rsum = o.detailRatios.reduce(function (a, b) { return a + b; }, 0);
+    var inner = (o.detailRatios.length - 1) * o.gapMm; // espaço entre detalhes
+    var widthMm = (o.heightMm - o.gapMm + inner / rsum) / (1 / o.fullRatio + 1 / rsum);
     return {
       widthMm: widthMm,
       fullHeightMm: widthMm / o.fullRatio,
-      detailsHeightMm: (widthMm - o.gapMm) / rsum,
+      detailsHeightMm: (widthMm - inner) / rsum,
     };
   }
 
@@ -26,9 +28,16 @@
     return !!(photo && photo.src && photo.w > 0 && photo.h > 0);
   }
 
+  /* Exige a foto principal e o detalhe 1; o detalhe 2 é opcional, mas se existir tem de ser válido. */
   function isRenderable(product) {
     var photos = product && product.photos;
-    return !!photos && hasPhoto(photos.full) && hasPhoto(photos.detail1) && hasPhoto(photos.detail2);
+    if (!photos || !hasPhoto(photos.full) || !hasPhoto(photos.detail1)) return false;
+    return photos.detail2 === undefined || hasPhoto(photos.detail2);
+  }
+
+  /* Texto do botão: o do produto, se houver; senão "Pedir a <título>". */
+  function ctaLabel(product) {
+    return product.ctaLabel || "Pedir a " + product.title;
   }
 
   function formatPrice(value) {
@@ -41,6 +50,7 @@
     buildWhatsAppUrl: buildWhatsAppUrl,
     photoBlock: photoBlock,
     isRenderable: isRenderable,
+    ctaLabel: ctaLabel,
     formatPrice: formatPrice,
   };
   if (typeof module !== "undefined" && module.exports) module.exports = api;

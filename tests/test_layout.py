@@ -63,12 +63,52 @@ class Layout(unittest.TestCase):
 
     def test_product_with_a_missing_photo_file_is_omitted(self):
         page = self.open(block="**/2-encanto-detail2.jpg")
-        self.assertEqual(page.locator(".page").count(), 4)  # capa + 3 produtos
+        self.assertEqual(page.locator(".page").count(), 11)  # capa + 10 produtos
         self.assertEqual(page.locator('[id="2-encanto"]').count(), 0)
         labels = page.eval_on_selector_all(".toolbar a", "els => els.map(e => e.textContent.trim())")
-        self.assertEqual(labels, ["Capa", "Linha Vime", "Linha Palha"])
+        self.assertEqual(labels, ["Capa", "Enfeites", "Linha Vime", "Linha Palha"])
         broken = page.evaluate("[...document.images].filter(i => !i.naturalWidth).length")
         self.assertEqual(broken, 0)
+
+    def product(self, page, title):
+        return page.locator(".page--product", has=page.locator(".head__title", has_text=title)).first
+
+    def test_enfeites_come_first_after_the_cover_in_the_agreed_order(self):
+        page = self.open()
+        titles = page.eval_on_selector_all(".page--product .head__title", "els => els.map(e => e.textContent)")
+        self.assertEqual(titles[:7], [
+            "Enfeite Poesia", "Enfeite Encanto Silvestre", "Enfeite Aconchego", "Enfeite Doce Magia",
+            "Enfeite Memórias", "Escapulário Bosque Encantado", "Escapulário Jardim de Natal"])
+        self.assertEqual(titles[7:], ["Guirlanda Laços de Amor", "Guirlanda Resplendor", "Guirlanda Encanto", "Guirlanda Luz"])
+
+    def test_enfeite_page_shows_burgundy_theme_price_and_button_but_no_size(self):
+        page = self.open()
+        pg = self.product(page, "Enfeite Doce Magia")
+        self.assertIn("theme-bordo", pg.get_attribute("class"))
+        self.assertEqual(pg.locator(".head__line").inner_text(), "ESCAPULÁRIOS E OUTROS ENFEITES")
+        self.assertEqual(pg.locator(".info__size").count(), 0)
+        self.assertEqual(pg.locator(".info__value--price").inner_text(), "R$ 58,00")
+        self.assertEqual(pg.locator(".cta").inner_text().strip(), "Pedir Doce Magia")
+        self.assertIn("Quero%20comprar%20o%20Enfeite%20Doce%20Magia!", pg.locator(".cta").get_attribute("href"))
+        bg = page.evaluate("getComputedStyle(document.querySelector('.theme-bordo')).getPropertyValue('--bg').trim()")
+        self.assertEqual(bg, "#4a1823")
+
+    def test_every_page_fits_and_no_photo_is_distorted(self):
+        page = self.open()
+        self.assertEqual(page.evaluate("document.documentElement.getAttribute('data-overflow')"), "")
+        bad = page.evaluate("""[...document.querySelectorAll('.page--product .photo')].filter(i => {
+            const r = i.getBoundingClientRect();
+            return Math.abs(r.width / r.height - i.naturalWidth / i.naturalHeight) > 0.01 * (i.naturalWidth / i.naturalHeight);
+        }).map(i => i.getAttribute('src'))""")
+        self.assertEqual(bad, [])
+
+    def test_poesia_has_the_full_photo_and_a_single_detail(self):
+        page = self.open()
+        pg = self.product(page, "Enfeite Poesia")
+        self.assertEqual(pg.locator("img.photo").count(), 2)
+        full = pg.locator(".photo--full").bounding_box()
+        detail = pg.locator(".photo--detail").bounding_box()
+        self.assertAlmostEqual(full["width"], detail["width"], delta=1)  # sem lacunas laterais
 
     def test_overflow_check_flags_a_button_pushed_onto_the_frame(self):
         page = self.open()

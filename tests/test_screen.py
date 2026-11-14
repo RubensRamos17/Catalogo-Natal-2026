@@ -27,7 +27,7 @@ class ScreenExperience(unittest.TestCase):
     def test_toolbar_has_shortcuts_and_save_button(self):
         page = self.open(1280)
         labels = page.eval_on_selector_all(".toolbar a", "els => els.map(e => e.textContent.trim())")
-        self.assertEqual(labels, ["Capa", "Linha Vime", "Linha Palha"])
+        self.assertEqual(labels, ["Capa", "Enfeites", "Linha Vime", "Linha Palha"])
         self.assertEqual(page.locator(".toolbar button").inner_text().strip(), "Salvar PDF")
         hrefs = page.eval_on_selector_all(".toolbar a", "els => els.map(e => e.getAttribute('href'))")
         for href in hrefs:
@@ -40,6 +40,11 @@ class ScreenExperience(unittest.TestCase):
                 self.assertLessEqual(page.evaluate("document.documentElement.scrollWidth"), width)
                 page_width = page.evaluate("document.querySelector('.page').getBoundingClientRect().width")
                 self.assertLessEqual(page_width, width)
+
+    def test_toolbar_fits_inside_a_small_phone(self):
+        page = self.open(360)
+        fits = page.evaluate("(() => { const t = document.querySelector('.toolbar'); return t.scrollWidth <= t.clientWidth; })()")
+        self.assertTrue(fits)
 
     def test_pages_keep_full_a4_width_on_wide_screens(self):
         page = self.open(1600)

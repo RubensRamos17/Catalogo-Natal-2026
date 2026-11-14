@@ -12,8 +12,8 @@ from pathlib import Path
 
 from PIL import Image
 
-MAX_SIDE = 1600
-QUALITY = 85
+MAX_SIDE = {"full": 1200, "detail": 1000}  # px no maior lado; o PDF fica abaixo de 10 MB
+QUALITY = 80
 PHOTO = re.compile(r"^\d+-.+-(full|detail1|detail2)\.png$")
 
 
@@ -25,7 +25,8 @@ def main(src_dir: str, dst_dir: str) -> None:
             continue
         with Image.open(png) as im:
             im = im.convert("RGB")
-            im.thumbnail((MAX_SIDE, MAX_SIDE), Image.LANCZOS)
+            side = MAX_SIDE["full" if png.stem.endswith("-full") else "detail"]
+            im.thumbnail((side, side), Image.LANCZOS)
             im.save(dst / f"{png.stem}.jpg", "JPEG", quality=QUALITY, optimize=True)
     logo = src / "Logo-guirlandas.png"
     if logo.exists():

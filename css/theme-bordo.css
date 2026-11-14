@@ -1,0 +1,22 @@
+/* Escapulários e Outros Enfeites: bordô fosco com dourado suave e verde-pinheiro no selo. */
+.theme-bordo {
+  --bg: #4a1823;
+  --frame: #c4a569;
+  --ink: #f3e8d4;
+  --muted: #d7c3a6;
+  --accent: #d3b57c;
+  --price: #e6cb92;
+  --rule: rgba(196, 165, 105, 0.45);
+  --btn-bg: #c4a569;
+  --btn-ink: #3a111b;
+  --seal-bg: #2c5642;
+  --seal-ink: #f3e8d4;
+  --photo-edge: rgba(196, 165, 105, 0.75);
+  --photo-shadow: rgba(0, 0, 0, 0.45);
+  --orn: #c4a569;
+  --orn-opacity: 0.4;
+  background:
+    radial-gradient(circle at 10% 14%, rgba(196, 165, 105, 0.07) 0, rgba(196, 165, 105, 0) 12%),
+    radial-gradient(circle at 92% 82%, rgba(196, 165, 105, 0.07) 0, rgba(196, 165, 105, 0) 12%),
+    radial-gradient(ellipse at 50% 40%, #561e2a 0, #4a1823 72%);
+}

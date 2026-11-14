@@ -124,6 +124,8 @@ h2, p { margin: 0; }
 .info__value { display: block; font-family: "Lora", Georgia, serif; font-weight: 700; font-size: 24pt; line-height: 1.05; color: var(--ink); }
 .info__value small { font-family: "Carlito", sans-serif; font-weight: 400; font-size: 10pt; color: var(--muted); letter-spacing: 0.02em; }
 .info__price { text-align: right; }
+.info--solo { justify-content: center; }
+.info--solo .info__price { text-align: center; }
 .info__value--price { font-size: 36pt; color: var(--price); }
 
 .pay {

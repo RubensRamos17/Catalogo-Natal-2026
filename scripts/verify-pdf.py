@@ -36,8 +36,9 @@ def expected_products():
     js = (
         "const c=require('./js/catalog-core.js'),d=require('./js/data.js');"
         "const out=[];d.lines.forEach(l=>d.products.filter(p=>p.line===l.key&&c.isRenderable(p))"
-        ".forEach(p=>out.push({title:p.title,price:c.formatPrice(p.price),"
-        "url:c.buildWhatsAppUrl(d.whatsapp,p.title)})));console.log(JSON.stringify(out))"
+        ".forEach(p=>out.push({title:p.title,price:c.formatPrice(p.price),cta:c.ctaLabel(p),"
+        "photos:Object.keys(p.photos).length,hasSize:!!p.size,"
+        "url:c.buildWhatsAppUrl(d.whatsapp,p.title,p.article)})));console.log(JSON.stringify(out))"
     )
     res = run(["node", "-e", js])
     if res.returncode != 0:
@@ -120,12 +121,14 @@ def main():
                 uris.append(str(action["/URI"]))
         if uris != [product["url"]]:
             failures.append(f"{product['title']}: links {uris} (esperado [{product['url']}])")
-        if images.get(n, 0) < 3:
-            failures.append(f"{product['title']}: {images.get(n, 0)} imagens no PDF (esperado >= 3)")
+        if images.get(n, 0) < product["photos"]:
+            failures.append(f"{product['title']}: {images.get(n, 0)} imagens no PDF (esperado >= {product['photos']})")
         text = pdf_text(n)
-        for needle in (product["title"], product["price"], "Pedir a " + product["title"]):
+        for needle in (product["title"], product["price"], product["cta"]):
             if needle not in text:
                 failures.append(f"{product['title']}: texto '{needle}' ausente na página {n}")
+        if ("de diâmetro" in text) != product["hasSize"]:
+            failures.append(f"{product['title']}: bloco de tamanho {'ausente' if product['hasSize'] else 'inesperado'} na página {n}")
 
     everything = pdf_text(1) + "".join(pdf_text(i) for i in range(2, len(pages) + 1))
     for word in BANNED:
