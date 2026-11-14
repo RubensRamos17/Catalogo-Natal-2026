@@ -1,0 +1,24 @@
+/* Linha Vime: verde-pinho escuro, dourado e brilhos discretos. */
+.theme-vime {
+  --bg: #0b291f;
+  --frame: #c49d55;
+  --ink: #f5e7cd;
+  --muted: #cbbf9f;
+  --accent: #ddba6b;
+  --price: #ddba6b;
+  --rule: rgba(196, 157, 85, 0.45);
+  --btn-bg: #c49d55;
+  --btn-ink: #0b291f;
+  --seal-bg: #7e2931;
+  --seal-ink: #f5e7cd;
+  --photo-edge: rgba(196, 157, 85, 0.55);
+  --photo-shadow: rgba(0, 0, 0, 0.35);
+  --orn: #c49d55;
+  --orn-opacity: 0.55;
+  background:
+    radial-gradient(circle at 12% 16%, rgba(221, 186, 107, 0.13) 0, rgba(221, 186, 107, 0) 11%),
+    radial-gradient(circle at 90% 30%, rgba(221, 186, 107, 0.10) 0, rgba(221, 186, 107, 0) 9%),
+    radial-gradient(circle at 8% 70%, rgba(221, 186, 107, 0.09) 0, rgba(221, 186, 107, 0) 10%),
+    radial-gradient(circle at 92% 88%, rgba(221, 186, 107, 0.12) 0, rgba(221, 186, 107, 0) 11%),
+    radial-gradient(ellipse at 50% 38%, #11382b 0, #0b291f 70%);
+}
