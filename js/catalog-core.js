@@ -46,12 +46,19 @@
     return "R$ " + int + "," + parts[1];
   }
 
+  /* "5527999222048" -> "(27) 99922-2048" (DDI 55 + DDD + número de 9 dígitos). */
+  function formatPhone(digits) {
+    var m = /^55(\d{2})(\d{5})(\d{4})$/.exec(digits);
+    return m ? "(" + m[1] + ") " + m[2] + "-" + m[3] : digits;
+  }
+
   var api = {
     buildWhatsAppUrl: buildWhatsAppUrl,
     photoBlock: photoBlock,
     isRenderable: isRenderable,
     ctaLabel: ctaLabel,
     formatPrice: formatPrice,
+    formatPhone: formatPhone,
   };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   globalThis.CatalogCore = api;

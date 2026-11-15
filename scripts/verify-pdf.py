@@ -37,7 +37,7 @@ def expected_products():
         "const c=require('./js/catalog-core.js'),d=require('./js/data.js');"
         "const out=[];d.lines.forEach(l=>d.products.filter(p=>p.line===l.key&&c.isRenderable(p))"
         ".forEach(p=>out.push({title:p.title,price:c.formatPrice(p.price),cta:c.ctaLabel(p),"
-        "photos:Object.keys(p.photos).length,hasSize:!!p.size,"
+        "photos:Object.keys(p.photos).length,hasSize:!!p.size,feature:p.feature||null,"
         "url:c.buildWhatsAppUrl(d.whatsapp,p.title,p.article)})));console.log(JSON.stringify(out))"
     )
     res = run(["node", "-e", js])
@@ -101,7 +101,7 @@ def main():
 
     reader = PdfReader(str(OUT))
     pages = reader.pages
-    expected_pages = 1 + len(products)
+    expected_pages = 2 + len(products)  # capa + produtos + página final
     if len(pages) != expected_pages:
         failures.append(f"páginas: {len(pages)} (esperado {expected_pages})")
 
@@ -124,11 +124,24 @@ def main():
         if images.get(n, 0) < product["photos"]:
             failures.append(f"{product['title']}: {images.get(n, 0)} imagens no PDF (esperado >= {product['photos']})")
         text = pdf_text(n)
-        for needle in (product["title"], product["price"], product["cta"]):
-            if needle not in text:
+        for needle in (product["title"], product["price"], product["cta"], product["feature"] or ""):
+            if needle.lower() not in text.lower():  # selos saem em caixa alta
                 failures.append(f"{product['title']}: texto '{needle}' ausente na página {n}")
         if ("de diâmetro" in text) != product["hasSize"]:
             failures.append(f"{product['title']}: bloco de tamanho {'ausente' if product['hasSize'] else 'inesperado'} na página {n}")
+
+    # Página final: fio de fada, valor adicional, pagamento e contato; um único link do WhatsApp.
+    last = len(pages)
+    final_text = pdf_text(last).lower()
+    for needle in ("fio de fada", "r$ 10,00", "dinheiro", "pix", "cartão até 6x", "(27) 99922-2048"):
+        if needle not in final_text:
+            failures.append(f"página final: texto '{needle}' ausente")
+    final_uris = [str(a.get_object()["/A"]["/URI"]) for a in (pages[last - 1].get("/Annots", []) or [])
+                  if a.get_object().get("/A") and a.get_object()["/A"].get("/URI")]
+    if len(final_uris) != 1 or not final_uris[0].startswith("https://wa.me/"):
+        failures.append(f"página final: links {final_uris} (esperado 1 link do WhatsApp)")
+    if images.get(last, 0) < 1:
+        failures.append("página final: foto do fio de fada ausente no PDF")
 
     everything = pdf_text(1) + "".join(pdf_text(i) for i in range(2, len(pages) + 1))
     for word in BANNED:

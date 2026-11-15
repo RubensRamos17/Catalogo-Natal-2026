@@ -80,7 +80,7 @@ test("catalog data keeps the agreed order, values and no banned words", () => {
     CATALOG.products.map((p) => [p.title, p.line, p.size, p.price]),
     [
       ["Enfeite Poesia", "enfeites", undefined, 30],
-      ["Enfeite Encanto Silvestre", "enfeites", undefined, 30],
+      ["Enfeite Encanto Silvestre", "enfeites", undefined, 40],
       ["Enfeite Sereno Encanto", "enfeites", undefined, 53],
       ["Enfeite Aconchego", "enfeites", undefined, 55],
       ["Enfeite Doce Magia", "enfeites", undefined, 58],
@@ -88,6 +88,8 @@ test("catalog data keeps the agreed order, values and no banned words", () => {
       ["Escapulário Bosque Encantado", "enfeites", undefined, 70],
       ["Escapulário Jardim de Natal", "enfeites", undefined, 90],
       ["Guirlanda Laços de Amor", "vime", "40 cm", 140],
+      ["Guirlanda Reluzir", "vime", "30 cm", 100],
+      ["Guirlanda Essência", "vime", "40 cm", 120],
       ["Guirlanda Resplendor", "palha", "40 cm", 120],
       ["Guirlanda Encanto", "palha", "30 cm", 100],
       ["Guirlanda Luz", "palha", "25 cm", 80],
@@ -119,4 +121,20 @@ test("enfeites use the user's button texts and the masculine article; poesia has
   assert.equal(by("Enfeite Poesia").photos.detail2, undefined);
   assert.ok(by("Enfeite Aconchego").photos.detail2);
   assert.equal(core.ctaLabel(by("Guirlanda Luz")), "Pedir a Guirlanda Luz");
+});
+
+test("reluzir announces its lighting, essencia does not; both use the 'Pedir Guirlanda' buttons", () => {
+  const by = (t) => CATALOG.products.find((p) => p.title === t);
+  assert.equal(by("Guirlanda Reluzir").feature, "Com iluminação");
+  assert.equal(by("Guirlanda Essência").feature, undefined);
+  assert.equal(core.ctaLabel(by("Guirlanda Reluzir")), "Pedir Guirlanda Reluzir");
+  assert.equal(core.ctaLabel(by("Guirlanda Essência")), "Pedir Guirlanda Essência");
+  assert.equal(by("Guirlanda Reluzir").article, undefined); // "Quero comprar a Guirlanda Reluzir!"
+});
+
+test("closing page data: lighting costs R$ 10 and the contact number is formatted", () => {
+  assert.equal(CATALOG.lighting.price, 10);
+  assert.equal(core.formatPrice(CATALOG.lighting.price), "R$ 10,00");
+  assert.ok(core.isRenderable({ photos: { full: CATALOG.lighting.photo, detail1: CATALOG.lighting.photo } }));
+  assert.equal(core.formatPhone(CATALOG.whatsapp), "(27) 99922-2048");
 });

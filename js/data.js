@@ -28,16 +28,16 @@
         article: "o",
         price: 30,
         ctaLabel: "Pedir Enfeite Poesia",
-        photos: photos("11-poesia", [[1200, 960], [750, 1000]]),
+        photos: photos("11-poesia", [[1100, 880], [675, 900]]),
       },
       {
         id: "10-encanto-silvestre",
         title: "Enfeite Encanto Silvestre",
         line: "enfeites",
         article: "o",
-        price: 30,
+        price: 40,
         ctaLabel: "Pedir Enfeite Encanto Silvestre",
-        photos: photos("10-encanto-silvestre", [[1200, 960], [750, 1000], [750, 1000]]),
+        photos: photos("10-encanto-silvestre", [[1100, 880], [675, 900], [675, 900]]),
       },
       {
         id: "14-sereno-encanto",
@@ -46,7 +46,7 @@
         article: "o",
         price: 53,
         ctaLabel: "Pedir Sereno Encanto",
-        photos: photos("14-sereno-encanto", [[1200, 960], [750, 1000], [750, 1000]]),
+        photos: photos("14-sereno-encanto", [[1100, 880], [675, 900], [675, 900]]),
       },
       {
         id: "13-aconchego",
@@ -55,7 +55,7 @@
         article: "o",
         price: 55,
         ctaLabel: "Pedir Enfeite Aconchego",
-        photos: photos("13-aconchego", [[1200, 960], [750, 1000], [750, 1000]]),
+        photos: photos("13-aconchego", [[1100, 880], [675, 900], [675, 900]]),
       },
       {
         id: "7-doce-magia",
@@ -64,7 +64,7 @@
         article: "o",
         price: 58,
         ctaLabel: "Pedir Doce Magia",
-        photos: photos("7-doce-magia", [[1200, 960], [1000, 750], [750, 1000]]),
+        photos: photos("7-doce-magia", [[1100, 880], [900, 675], [675, 900]]),
       },
       {
         id: "8-memorias",
@@ -73,7 +73,7 @@
         article: "o",
         price: 70,
         ctaLabel: "Pedir Enfeite Memórias",
-        photos: photos("8-memorias", [[1200, 960], [750, 1000], [750, 1000]]),
+        photos: photos("8-memorias", [[1100, 880], [675, 900], [675, 900]]),
       },
       {
         id: "9-bosque-encantado",
@@ -82,7 +82,7 @@
         article: "o",
         price: 70,
         ctaLabel: "Pedir Escapulário Bosque Encantado",
-        photos: photos("9-bosque-encantado", [[1200, 960], [750, 1000], [750, 1000]]),
+        photos: photos("9-bosque-encantado", [[1100, 880], [675, 900], [675, 900]]),
       },
       {
         id: "12-jardim-de-natal",
@@ -91,7 +91,7 @@
         article: "o",
         price: 90,
         ctaLabel: "Pedir Escapulário Jardim de Natal",
-        photos: photos("12-jardim-de-natal", [[1200, 960], [750, 1000], [750, 1000]]),
+        photos: photos("12-jardim-de-natal", [[1100, 880], [675, 900], [675, 900]]),
       },
       {
         id: "4-lacos-de-amor",
@@ -99,7 +99,26 @@
         line: "vime",
         size: "40 cm",
         price: 140,
-        photos: photos("4-lacos-de-amor", [[1200, 960], [752, 1000], [753, 1000]]),
+        photos: photos("4-lacos-de-amor", [[1100, 880], [677, 900], [678, 900]]),
+      },
+      {
+        id: "5-reluzir",
+        title: "Guirlanda Reluzir",
+        line: "vime",
+        feature: "Com iluminação",
+        size: "30 cm",
+        price: 100,
+        ctaLabel: "Pedir Guirlanda Reluzir",
+        photos: photos("5-reluzir", [[1100, 880], [678, 900], [675, 900]]),
+      },
+      {
+        id: "6-essencia",
+        title: "Guirlanda Essência",
+        line: "vime",
+        size: "40 cm",
+        price: 120,
+        ctaLabel: "Pedir Guirlanda Essência",
+        photos: photos("6-essencia", [[1100, 880], [678, 900], [678, 900]]),
       },
       {
         id: "1-resplendor",
@@ -107,7 +126,7 @@
         line: "palha",
         size: "40 cm",
         price: 120,
-        photos: photos("1-resplendor", [[1200, 960], [914, 1000], [914, 1000]]),
+        photos: photos("1-resplendor", [[1100, 880], [822, 900], [822, 900]]),
       },
       {
         id: "2-encanto",
@@ -115,7 +134,7 @@
         line: "palha",
         size: "30 cm",
         price: 100,
-        photos: photos("2-encanto", [[1200, 960], [1000, 753], [1000, 753]]),
+        photos: photos("2-encanto", [[1100, 880], [900, 678], [900, 678]]),
       },
       {
         id: "3-luz",
@@ -123,9 +142,15 @@
         line: "palha",
         size: "25 cm",
         price: 80,
-        photos: photos("3-luz", [[1200, 960], [753, 1000], [1000, 753]]),
+        photos: photos("3-luz", [[1100, 880], [678, 900], [900, 678]]),
       },
     ],
+  };
+
+  /* Página final: iluminação opcional com fio de fada (valor adicional por guirlanda). */
+  CATALOG.lighting = {
+    price: 10,
+    photo: { src: "assets/img/fio-de-fada.jpg", w: 900, h: 900 },
   };
 
   if (typeof module !== "undefined" && module.exports) module.exports = CATALOG;

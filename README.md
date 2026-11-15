@@ -26,10 +26,12 @@ Tudo que muda fica em `js/data.js`:
   (com `photos("[id]-[nome]", [[w,h],[w,h],[w,h]])` — larguras/alturas dos JPEGs gerados;
   com um detalhe só, passe apenas dois pares). Produto sem a foto principal e o detalhe 1 é ignorado, sem quebrar nada.
 - **Campos opcionais do produto:** `size` (sem ele a página mostra só o valor, centralizado),
+  `feature` (selo extra no cabeçalho, ex.: "Com iluminação"),
   `ctaLabel` (texto do botão; padrão "Pedir a <título>") e `article: "o"` (mensagem do WhatsApp
   "Quero comprar o …"; padrão "a").
 - **Ordem das páginas:** primeiro a linha que aparece antes em `lines`, depois a ordem dos itens em `products`.
-  Hoje: Escapulários e Outros Enfeites (tema bordô), Linha Vime, Linha Palha.
+  Hoje: Escapulários e Outros Enfeites (tema bordô), Linha Vime, Linha Palha e, ao final, a página de
+  iluminação com fio de fada + pagamento e contato (`lighting` em `js/data.js`).
 - **Nova linha:** acrescente em `lines` (`nav` é o nome curto do atalho na barra) e use o mesmo `line`
   nos produtos; para um tema novo, crie `css/theme-<nome>.css` seguindo `theme-bordo.css`.
 

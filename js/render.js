@@ -83,6 +83,7 @@
     var sub = el("p", "head__sub");
     sub.appendChild(text("span", "head__model", "Modelo Exclusivo"));
     sub.appendChild(text("span", "seal", "Pronta entrega"));
+    if (product.feature) sub.appendChild(text("span", "seal seal--feature", product.feature));
     head.appendChild(sub);
     inner.appendChild(head);
 
@@ -144,6 +145,56 @@
     return page;
   }
 
+  /* Última página: iluminação opcional (parte 1) e pagamento + contato (parte 2). */
+  function renderClosing(data) {
+    var core = globalThis.CatalogCore;
+    var page = el("section", "page page--closing theme-vime");
+    page.id = "final";
+    page.appendChild(frame());
+    var inner = el("div", "page__inner");
+    page.appendChild(inner);
+
+    var head = el("header", "head");
+    head.appendChild(text("p", "head__eyebrow", "COLEÇÃO NATALINA"));
+    head.appendChild(el("div", "head__rule"));
+    inner.appendChild(head);
+
+    var light = el("section", "closing__part");
+    light.appendChild(text("p", "head__line", "ILUMINAÇÃO OPCIONAL"));
+    light.appendChild(text("h2", "head__title", "Fio de fada"));
+    light.appendChild(text("p", "closing__text", "Todas as guirlandas podem ter iluminação com fio de fada, por um valor adicional de"));
+    light.appendChild(text("strong", "info__value info__value--price closing__price", "+ " + core.formatPrice(data.lighting.price)));
+    var ph = data.lighting.photo;
+    var img = el("img", "photo closing__photo");
+    img.src = ph.src;
+    img.width = ph.w;
+    img.height = ph.h;
+    img.alt = "Iluminação com fio de fada";
+    light.appendChild(img);
+    inner.appendChild(light);
+
+    var contact = el("section", "closing__part closing__part--contact");
+    contact.appendChild(text("p", "head__line", "PAGAMENTO E CONTATO"));
+    contact.appendChild(text("h2", "head__title closing__title-sm", "Como comprar"));
+    var pay = el("div", "pay");
+    [["cash", "Dinheiro"], ["pix", "Pix"], ["card", "Cartão até 6x (+ taxa)"]].forEach(function (m) {
+      var item = el("span", "pay__item", '<span class="pay__icon">' + ICONS[m[0]] + "</span>");
+      item.appendChild(text("span", "", m[1]));
+      pay.appendChild(item);
+    });
+    contact.appendChild(pay);
+    contact.appendChild(text("p", "closing__text", "Peças em pronta entrega. Fale com a gente pelo WhatsApp:"));
+    contact.appendChild(text("strong", "info__value closing__phone", core.formatPhone(data.whatsapp)));
+    inner.appendChild(contact);
+
+    var cta = text("a", "cta", "Chamar no WhatsApp");
+    cta.href = "https://wa.me/" + data.whatsapp + "?text=" + encodeURIComponent("Olá! Vi o catálogo de Natal e gostaria de mais informações.");
+    cta.target = "_blank";
+    cta.rel = "noopener";
+    inner.appendChild(cta);
+    return page;
+  }
+
   function renderCatalog(root, data) {
     var core = globalThis.CatalogCore;
     root.textContent = "";
@@ -158,6 +209,7 @@
         root.appendChild(renderProduct(data, product, line));
       });
     });
+    if (data.lighting) root.appendChild(renderClosing(data));
   }
 
   /* Marca <html class="ready"> quando fontes e imagens terminaram de carregar,
@@ -211,18 +263,22 @@
         img.src = src;
       });
     };
-    return Promise.all(
+    var lightingOk = data.lighting ? loads(data.lighting.photo.src) : Promise.resolve(false);
+    return Promise.all([lightingOk].concat(
       data.products.map(function (p) {
         if (!globalThis.CatalogCore.isRenderable(p)) return false;
         return Promise.all([p.photos.full, p.photos.detail1, p.photos.detail2].filter(Boolean).map(function (f) { return loads(f.src); }))
           .then(function (r) { return r.every(Boolean); });
       })
-    ).then(function (ok) {
+    )).then(function (res) {
+      var ok = res.slice(1);
       var kept = data.products.filter(function (p, i) {
         if (!ok[i]) console.warn("Produto ignorado (faltam fotos):", p.id);
         return ok[i];
       });
-      return Object.assign({}, data, { products: kept });
+      var out = Object.assign({}, data, { products: kept });
+      if (!res[0]) { delete out.lighting; console.warn("Página final ignorada (falta a foto do fio de fada)"); }
+      return out;
     });
   }
 

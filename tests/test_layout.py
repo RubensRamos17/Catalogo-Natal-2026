@@ -63,7 +63,7 @@ class Layout(unittest.TestCase):
 
     def test_product_with_a_missing_photo_file_is_omitted(self):
         page = self.open(block="**/2-encanto-detail2.jpg")
-        self.assertEqual(page.locator(".page").count(), 12)  # capa + 11 produtos
+        self.assertEqual(page.locator(".page").count(), 15)  # capa + 14 produtos + página final (16) menos o omitido
         self.assertEqual(page.locator('[id="2-encanto"]').count(), 0)
         labels = page.eval_on_selector_all(".toolbar a", "els => els.map(e => e.textContent.trim())")
         self.assertEqual(labels, ["Capa", "Enfeites", "Linha Vime", "Linha Palha"])
@@ -79,7 +79,7 @@ class Layout(unittest.TestCase):
         self.assertEqual(titles[:8], [
             "Enfeite Poesia", "Enfeite Encanto Silvestre", "Enfeite Sereno Encanto", "Enfeite Aconchego", "Enfeite Doce Magia",
             "Enfeite Memórias", "Escapulário Bosque Encantado", "Escapulário Jardim de Natal"])
-        self.assertEqual(titles[8:], ["Guirlanda Laços de Amor", "Guirlanda Resplendor", "Guirlanda Encanto", "Guirlanda Luz"])
+        self.assertEqual(titles[8:], ["Guirlanda Laços de Amor", "Guirlanda Reluzir", "Guirlanda Essência", "Guirlanda Resplendor", "Guirlanda Encanto", "Guirlanda Luz"])
 
     def test_enfeite_page_shows_burgundy_theme_price_and_button_but_no_size(self):
         page = self.open()
@@ -109,6 +109,38 @@ class Layout(unittest.TestCase):
         full = pg.locator(".photo--full").bounding_box()
         detail = pg.locator(".photo--detail").bounding_box()
         self.assertAlmostEqual(full["width"], detail["width"], delta=1)  # sem lacunas laterais
+
+    def test_closing_page_is_omitted_when_its_photo_is_missing(self):
+        page = self.open(block="**/fio-de-fada.jpg")
+        self.assertEqual(page.locator("#final").count(), 0)
+        self.assertEqual(page.locator(".page").count(), 15)  # capa + 14 produtos
+        self.assertEqual(page.evaluate("[...document.images].filter(i => !i.naturalWidth).length"), 0)
+
+    def test_reluzir_announces_the_lighting_and_essencia_does_not(self):
+        page = self.open()
+        reluzir = self.product(page, "Guirlanda Reluzir")
+        self.assertEqual(reluzir.locator(".seal--feature").text_content(), "Com iluminação")
+        self.assertIn("30 cm", reluzir.locator(".info__size").inner_text())
+        self.assertEqual(reluzir.locator(".cta").inner_text().strip(), "Pedir Guirlanda Reluzir")
+        self.assertIn("Quero%20comprar%20a%20Guirlanda%20Reluzir!", reluzir.locator(".cta").get_attribute("href"))
+        self.assertEqual(self.product(page, "Guirlanda Essência").locator(".seal--feature").count(), 0)
+
+    def test_closing_page_is_last_with_lighting_offer_payment_and_contact(self):
+        page = self.open()
+        pages = page.locator(".page")
+        last = pages.nth(pages.count() - 1)
+        self.assertEqual(last.get_attribute("id"), "final")
+        text = last.inner_text().lower()
+        for needle in ("fio de fada", "r$ 10,00", "dinheiro", "pix", "cartão até 6x", "(27) 99922-2048"):
+            self.assertIn(needle, text)
+        links = last.locator("a").evaluate_all("els => els.map(e => e.href)")
+        self.assertEqual(len(links), 1)
+        self.assertTrue(links[0].startswith("https://wa.me/5527999222048"))
+        ok = last.locator("img").evaluate_all("""els => els.length >= 1 && els.every(i => {
+            const r = i.getBoundingClientRect();
+            return Math.abs(r.width / r.height - i.naturalWidth / i.naturalHeight) < 0.01;})""")
+        self.assertTrue(ok)
+        self.assertEqual(page.evaluate("document.documentElement.getAttribute('data-overflow')"), "")
 
     def test_overflow_check_flags_a_button_pushed_onto_the_frame(self):
         page = self.open()

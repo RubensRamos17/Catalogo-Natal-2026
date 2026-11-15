@@ -12,16 +12,17 @@ from pathlib import Path
 
 from PIL import Image
 
-MAX_SIDE = {"full": 1200, "detail": 1000}  # px no maior lado; o PDF fica abaixo de 10 MB
-QUALITY = 80
+MAX_SIDE = {"full": 1100, "detail": 900}  # px no maior lado; o PDF fica abaixo de 10 MB
+QUALITY = 76
 PHOTO = re.compile(r"^\d+-.+-(full|detail1|detail2)\.png$")
+EXTRAS = {"fio-de-fada.png"}  # fotos avulsas (página final)
 
 
 def main(src_dir: str, dst_dir: str) -> None:
     src, dst = Path(src_dir), Path(dst_dir)
     dst.mkdir(parents=True, exist_ok=True)
     for png in sorted(src.glob("*.png")):
-        if not PHOTO.match(png.name):
+        if not PHOTO.match(png.name) and png.name not in EXTRAS:
             continue
         with Image.open(png) as im:
             im = im.convert("RGB")
