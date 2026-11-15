@@ -120,7 +120,7 @@ class Layout(unittest.TestCase):
         page = self.open()
         reluzir = self.product(page, "Guirlanda Reluzir")
         self.assertEqual(reluzir.locator(".seal--feature").text_content(), "Com iluminação")
-        self.assertIn("30 cm", reluzir.locator(".info__size").inner_text())
+        self.assertIn("25 cm", reluzir.locator(".info__size").inner_text())
         self.assertEqual(reluzir.locator(".cta").inner_text().strip(), "Pedir Guirlanda Reluzir")
         self.assertIn("Quero%20comprar%20a%20Guirlanda%20Reluzir!", reluzir.locator(".cta").get_attribute("href"))
         self.assertEqual(self.product(page, "Guirlanda Essência").locator(".seal--feature").count(), 0)

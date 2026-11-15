@@ -88,7 +88,7 @@ test("catalog data keeps the agreed order, values and no banned words", () => {
       ["Escapulário Bosque Encantado", "enfeites", undefined, 70],
       ["Escapulário Jardim de Natal", "enfeites", undefined, 90],
       ["Guirlanda Laços de Amor", "vime", "40 cm", 140],
-      ["Guirlanda Reluzir", "vime", "30 cm", 100],
+      ["Guirlanda Reluzir", "vime", "25 cm", 100],
       ["Guirlanda Essência", "vime", "40 cm", 120],
       ["Guirlanda Resplendor", "palha", "40 cm", 120],
       ["Guirlanda Encanto", "palha", "30 cm", 100],

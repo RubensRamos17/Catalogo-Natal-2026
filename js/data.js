@@ -106,7 +106,7 @@
         title: "Guirlanda Reluzir",
         line: "vime",
         feature: "Com iluminação",
-        size: "30 cm",
+        size: "25 cm",
         price: 100,
         ctaLabel: "Pedir Guirlanda Reluzir",
         photos: photos("5-reluzir", [[1100, 880], [678, 900], [675, 900]]),
